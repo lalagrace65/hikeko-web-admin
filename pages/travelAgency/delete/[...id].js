@@ -26,7 +26,7 @@ export default function DeleteTravelAgencyPage(){
     return(
         <Layout>
             <h1 className="text-center">Do you really want to delete 
-                &nbsp;"{travelAgencyInfo?.title}"?
+                &nbsp;&quot;{travelAgencyInfo?.title}&quot;?
             </h1>
             <div className="flex gap-2 justify-center">
                 <button 

@@ -26,7 +26,7 @@ export default function DeleteFeaturePage(){
     return(
         <Layout>
             <h1 className="text-center">Do you really want to delete 
-                &nbsp;"{featureInfo?.title}"?
+                &nbsp;&quot;{featureInfo?.title}&quot;?
             </h1>
             <div className="flex gap-2 justify-center">
                 <button 

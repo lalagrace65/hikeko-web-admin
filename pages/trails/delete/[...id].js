@@ -26,7 +26,7 @@ export default function DeleteTrailPage(){
     return(
         <Layout>
             <h1 className="text-center">Do you really want to delete 
-                &nbsp;"{trailInfo?.title}"?
+                &nbsp;&quot;{trailInfo?.title}&quot;?
             </h1>
             <div className="flex gap-2 justify-center">
                 <button 

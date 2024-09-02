@@ -4,29 +4,32 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function DeleteCouponPage(){
-    const router =useRouter();
-    const[couponInfo,setCouponInfo] = useState();
-    const {id} = router.query;
+    const router = useRouter();
+    const [couponInfo, setCouponInfo] = useState();
+    const { id } = router.query;
+
     useEffect(() => {
-        if (!id){
+        if (!id) {
             return;
         }
-        axios.get('/api/coupons?id='+id).then(response => {
+        axios.get('/api/coupons?id=' + id).then(response => {
             setCouponInfo(response.data);
         });
     }, [id]);
 
-    function goBack(){
+    function goBack() {
         router.push('/coupons');
     }
-    async function deleteCoupon(){
-        await axios.delete('/api/coupons?id=' +id);
+
+    async function deleteCoupon() {
+        await axios.delete('/api/coupons?id=' + id);
         goBack();
     }
-    return(
+
+    return (
         <Layout>
-            <h1 className="text-center">Do you really want to delete 
-                &nbsp;"{couponInfo?.title}"?
+            <h1 className="text-center">
+                Do you really want to delete&nbsp;&quot;{couponInfo?.title}&quot;?
             </h1>
             <div className="flex gap-2 justify-center">
                 <button 
@@ -40,7 +43,6 @@ export default function DeleteCouponPage(){
                     No
                 </button>
             </div>
-           
         </Layout>
-    )
+    );
 }
