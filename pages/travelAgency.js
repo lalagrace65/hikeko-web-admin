@@ -25,7 +25,7 @@ export default function TravelAgency(){
                         <td>Business Permit</td>
                         <td>BIR Certificate</td>
                         <td>DTI Permit</td>
-                        <td>Mayor's Permit</td>
+                        <td>Mayor&apos;s Permit</td>
                         <td>Status</td>
                         <td>Actions</td>
                     </tr>

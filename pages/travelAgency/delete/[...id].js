@@ -40,7 +40,6 @@ export default function DeleteTravelAgencyPage(){
                     No
                 </button>
             </div>
-           
         </Layout>
     )
 }

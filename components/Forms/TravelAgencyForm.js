@@ -214,7 +214,7 @@ export default function TravelAgencyForm({
                     <input type="file" onChange={(ev)=>uploadImages(ev,setDtiPermit)} className="hidden"/>
                 </label>
             </div>
-            <label>Mayor's Permit</label>
+            <label>Mayor&apos;s Permit</label>
             <div className="mb-2 flex flex-wrap gap-1">
                 <ReactSortable 
                     list={mayorPermit}

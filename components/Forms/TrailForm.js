@@ -138,18 +138,18 @@ export default function TrailForm({
                 onChange={ev => setCategory(ev.target.value)}>
             <option value="">Uncategorized</option>
                 {categories.length > 0 && categories.map(c => (
-            <option value={c._id}>{c.name}</option>
+            <option key={c._id} value={c._id}>{c.name}</option>
             ))}
             </select>
             {propertiesToFill.length >0 && propertiesToFill.map(p => (
-                <div className="flex gap-1">
+                <div key={p.name} className="flex gap-1">
                     <div>{p.name}</div>
                     <select value={trailProperties[p.name]} 
                         onChange={ev =>
                         setTrailProp(p.name,ev.target.value)
                     }>
                         {p.values.map (v => (
-                            <option value={v}>{v}</option>
+                            <option key={v} value={v}>{v}</option>
                         ))}
                     </select>
                 </div>
