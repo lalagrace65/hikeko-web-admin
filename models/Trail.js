@@ -13,8 +13,9 @@ const TrailSchema = new Schema({
     coordinates: {
         lat: { type: Number, required: true },
         lng: { type: Number, required: true }
-    }
+    },
+},{
+    timestamps: true,
 });
 // create a model
-
 export const Trails = models.Trails || model('Trails',TrailSchema);

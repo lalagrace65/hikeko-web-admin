@@ -69,10 +69,7 @@ export default function TravelAgencyForm({
         setImagesFunction(images);
     }
 
-    
-
-    return (
-        
+    return (  
             <form onSubmit={saveTravelAgency}>
             <label>Travel Agency</label>
                 <input 

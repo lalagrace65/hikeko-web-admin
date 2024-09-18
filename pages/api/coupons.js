@@ -18,7 +18,7 @@ export default async function handle(req, res) {
     if (method ==='POST') {
         const {title, discount, quantity} = req.body;
         const couponDoc = await Coupons.create({
-            title, disecount, quantity
+            title, discount, quantity
         })
         res.json(couponDoc);
     }

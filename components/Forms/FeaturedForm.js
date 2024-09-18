@@ -16,7 +16,6 @@ export default function FeaturedForm({
     description_3:existingDescription_3,
     bannerImage_3:existingBannerImage_3,
 
-    
 }){
     const[titleText_1, setTitleText_1] = useState(existingTitleText_1 || '');
     const[description_1,setDescription_1] = useState(existingDescription_1 || '');
