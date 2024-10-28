@@ -5,6 +5,7 @@ import Spinner from "../Spinner";
 import { ReactSortable } from "react-sortablejs";
 import GoogleMapView from "../GoogleMapView";
 import { UserLocationContext } from "@/context/UserLocationContext";
+import toast from "react-hot-toast";
 
 // Utility function to parse coordinate strings
 function parseCoordinate(coordinate) {
@@ -21,7 +22,8 @@ export default function TrailForm({
     _id,
     title:existingTitle,
     description:existingDescription,
-    price:existingPrice,
+    trailLocation:existingTrailLocation,
+    features:existingFeatures,
     trailClass:existingTrailClass,
     difficultyLevel:existingDifficultyLevel,
     elevation:existingElevation,
@@ -32,9 +34,10 @@ export default function TrailForm({
 }){
     const[title, setTitle] = useState(existingTitle || '');
     const[description,setDescription] = useState(existingDescription || '');
+    const[trailLocation,setTrailLocation] = useState(existingTrailLocation || '');
     const[category,setCategory] = useState(assignedCategory || '');
     const[trailProperties,setTrailProperties] = useState(assignedProperties || {});
-    const[price,setPrice] = useState(existingPrice || '');
+    const[features,setFeatures] = useState(existingFeatures || '');
     const[trailClass,setTrailClass] = useState(existingTrailClass || '');
     const[difficultyLevel,setDifficultyLevel] = useState(existingDifficultyLevel || '');
     const[elevation,setElevation] = useState(existingElevation || '');
@@ -45,6 +48,7 @@ export default function TrailForm({
     const[categories,setCategories] = useState([]);
     const[goToTrails, setGoToTrails] = useState(false);
     const[isUploading,setIsUploading] = useState(false);
+    const [error, setError] = useState(null); // Error state
     const router = useRouter();
     //for category
     useEffect(()=>{
@@ -54,7 +58,15 @@ export default function TrailForm({
     },[]);
     async function saveTrail(ev){
         ev.preventDefault();
-        const data = {title,category,description,price,
+
+        // Check if all required fields are filled
+        if (!title || !category || !description || !trailLocation || !features || 
+            !trailClass || !difficultyLevel || !elevation || !latitude || !longitude) {
+            toast.error("All fields are required!");
+            return;
+        }
+
+        const data = {title,category,description,features, trailLocation,
             trailClass,difficultyLevel,elevation, 
             properties: trailProperties,
             trailImages, coordinates: {
@@ -62,15 +74,19 @@ export default function TrailForm({
                 lng: parseCoordinate(longitude)  // Parse the longitude input
             }
         };
-        if (_id){
-            //update 
-            await axios.put('/api/trails', {...data,_id});
-        }else{
-            //create
-            await axios.post('/api/trails', data);
+        try{
+            if (_id){
+                //update 
+                await axios.put('/api/trails', {...data,_id});
+            }else{
+                //create
+                await axios.post('/api/trails', data);
+            }
+            //redirect to Trails - meaning updated
+            setGoToTrails(true);
+        }catch(err){
+            toast.error("Failed to save trail");
         }
-        //redirect to Trails - meaning updated
-        setGoToTrails(true);
     }
     
     if (goToTrails){
@@ -126,6 +142,7 @@ export default function TrailForm({
 
     return (
         <form onSubmit={saveTrail}>
+        {error && <p className="text-red-500">{error}</p>} {/* Display error message */}
         <label>Trail Name</label>
             <input 
                 type="text" 
@@ -190,18 +207,25 @@ export default function TrailForm({
                 <input type="file" onChange={uploadImages} className="hidden"/>
             </label>
         </div>
+        <label>Location</label>
+            <input 
+                type="text" 
+                placeholder="location"
+                value={trailLocation}
+                onChange={ev => setTrailLocation(ev.target.value)}
+            />
         <label>Description</label>
             <textarea 
                 placeholder="description" 
                 value={description} 
                 onChange={ev => setDescription(ev.target.value)}
             />
-        <label>Price</label>
+        <label>Features</label>
             <input 
                 type="text" 
-                placeholder="price"
-                value={price}
-                onChange={ev => setPrice(ev.target.value)}
+                placeholder="features"
+                value={features}
+                onChange={ev => setFeatures(ev.target.value)}
             />
         <label>Trail Class</label>
             <input 
@@ -241,7 +265,7 @@ export default function TrailForm({
         <label>Map</label>
         <div>
             <UserLocationContext.Provider value={{ userLocation: { lat: parseFloat(latitude), lng: parseFloat(longitude) } }}>
-                <GoogleMapView />
+                <GoogleMapView latitude={latitude} longitude={longitude} />
             </UserLocationContext.Provider>
         </div>
         <button 

@@ -4,13 +4,20 @@ import React, {useContext} from "react";
 
 
 
-function GoogleMapView() {
+function GoogleMapView({ latitude, longitude }) {
     const { userLocation } = useContext(UserLocationContext);
 
     const containerStyle = {
         width: "100%",
         height: "70vh",
     };
+
+    // Create a position object from the latitude and longitude
+    const markerPosition = {
+        lat: parseFloat(latitude),
+        lng: parseFloat(longitude),
+    };
+
 
     return (
         <div>
@@ -20,7 +27,18 @@ function GoogleMapView() {
                     center={userLocation}  // Use the userLocation to center the map
                     zoom={12}
                 >
-                    <Marker position={userLocation} />
+                    {/* Add marker at the inputted latitude and longitude */}
+                    {latitude && longitude &&
+                     <Marker position={markerPosition} 
+                        icon={{
+                            url: '/marker.png',
+                            scaledSize: {
+                                width: 50,
+                                height: 50,
+                            }
+                        }} 
+                        />
+                    }
                 </GoogleMap>
             </LoadScript>
         </div>

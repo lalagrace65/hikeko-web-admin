@@ -1,13 +1,11 @@
 import {Trails} from "@/models/Trail";
 import { mongooseConnect } from "@/lib/mongoose";
 import { getServerSession } from "next-auth";
-import { authOptions, isSuperAdminRequest } from "./auth/[...nextauth]";
 
 
 export default async function handle(req, res) {
     const {method} = req;
     await mongooseConnect();
-    await isSuperAdminRequest(req, res);
 
     if (method === 'GET'){
         if(req.query?.id){
@@ -18,17 +16,17 @@ export default async function handle(req, res) {
     }
 
     if (method ==='POST') {
-        const {title,category,properties, description, price, trailClass, difficultyLevel, elevation, trailImages, coordinates} = req.body;
+        const {title,category,properties, description, features, trailLocation, trailClass, difficultyLevel, elevation, trailImages, coordinates} = req.body;
         const trailDoc = await Trails.create({
-            title, category, properties, description, price, trailClass, difficultyLevel, elevation, trailImages, coordinates
+            title, category, properties, description, features, trailLocation,trailClass, difficultyLevel, elevation, trailImages, coordinates
         })
         res.json(trailDoc);
     }
 
     if (method ==='PUT'){
-        const {title,category, properties, description, price, trailClass, difficultyLevel, elevation, trailImages, coordinates, _id} = req.body;
+        const {title,category, properties, description, features, trailLocation,trailClass, difficultyLevel, elevation, trailImages, coordinates, _id} = req.body;
        
-        await Trails.updateOne({_id}, {title, category, properties, description, price, trailClass, difficultyLevel, elevation, trailImages, coordinates} );
+        await Trails.updateOne({_id}, {title, category, properties, description, features, trailLocation, trailClass, difficultyLevel, elevation, trailImages, coordinates} );
         res.json(true);
     }
 

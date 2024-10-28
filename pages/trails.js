@@ -2,22 +2,43 @@ import Layout from "@/components/Layout";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import Modal from "@/components/menu/Modal";
 
 export default function Trails(){
     const [trails,setTrails] = useState([]);
+    const [expandedTrailId, setExpandedTrailId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState("");
+
     useEffect(() => {
         axios.get('/api/trails').then(response => {
             setTrails(response.data);
         });
     }, []);
+    // Function to toggle the expansion of the description
+  const toggleExpand = (trailId) => {
+    setExpandedTrailId(expandedTrailId === trailId ? null : trailId);
+  };
+  const openModal = (imageUrl) => {
+      setSelectedImage(imageUrl);
+      setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+      setIsModalOpen(false);
+      setSelectedImage("");
+  };
+
+
     return(
         <Layout>
             <Link className="btn-primary" href={'/trails/new'}>Add new trail</Link>
             <table className="basic mt-2">
                 <thead>
                     <tr>
+                        <td>Trail Image </td>
                         <td>Trail Name </td>
+                        <td>Trail Location </td>
                         <td>Trail Class </td>
                         <td>Difficulty Level </td>
                         <td>Elevation</td>
@@ -28,11 +49,45 @@ export default function Trails(){
                 <tbody>
                     {trails.map(trail => (
                         <tr key={trail._id}>
+                            <td>
+                                {trail.trailImages.map((link, index) => (
+                                    <img
+                                        key={index}
+                                        src={link}
+                                        alt="trail Images"
+                                        className="h-20 w-20 object-cover rounded-lg cursor-pointer"
+                                        onClick={() => openModal(link)} // Open modal on click
+                                    />
+                                ))}
+                            </td>
                             <td>{trail.title}</td>
+                            <td>{trail.trailLocation}</td>
                             <td>{trail.trailClass}</td>
                             <td>{trail.difficultyLevel}</td>
                             <td>{trail.elevation}</td>
-                            <td>{trail.description}</td>
+                            <td>
+                                {expandedTrailId === trail._id ? (
+                                  <>
+                                    {trail.description}{" "}
+                                    <button onClick={() => toggleExpand(trail._id)}  
+                                    className="text-customPrBg text-decoration-underline">
+                                      Show less
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    {trail.description.length > 100
+                                      ? `${trail.description.substring(0, 100)}...`
+                                      : trail.description}{" "}
+                                    {trail.description.length > 100 && (
+                                      <button onClick={() => toggleExpand(trail._id)} 
+                                        className="text-customPrBg text-decoration-underline">
+                                        Read more
+                                      </button>
+                                    )}
+                                  </>
+                                )}
+                            </td>
                             <td>
                                 <Link href={'/trails/edit/'+trail._id}>
                                     <svg xmlns="http://www.w3.org/2000/svg" 
@@ -68,213 +123,9 @@ export default function Trails(){
                     ))}
                 </tbody>
             </table>
+            <Modal isOpen={isModalOpen} onClose={closeModal} 
+            imageUrl={selectedImage} /> {/* Modal to show selected image */}
         </Layout>
     )
     
 }
-/*
-import { PencilIcon } from "@heroicons/react/24/solid";
-import {
-  ArrowDownTrayIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
-import {
-  Card,
-  CardHeader,
-  Typography,
-  Button,
-  CardBody,
-  Chip,
-  CardFooter,
-  Avatar,
-  IconButton,
-  Tooltip,
-  Input,
-} from "@material-tailwind/react";
- 
-const TABLE_HEAD = ["Trail Name", "Trail Class", "Difficulty", "Elevation", "Description", "Actions"];
- 
- 
-export default function Trails() {
-    const [trails,setTrails] = useState([]);
-    useEffect(() => {
-        axios.get('/api/trails').then(response => {
-            setTrails(response.data);
-        });
-    }, []);
-  return (
-    <Card className="h-full w-full">
-      <CardHeader floated={false} shadow={false} className="rounded-none">
-        <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
-          <div>
-            <Typography variant="h5" color="blue-gray">
-              List of Mountains
-            </Typography>
-            <Typography color="gray" className="mt-1 font-normal">
-              These are details about the mountains
-            </Typography>
-          </div>
-          <div className="flex w-full shrink-0 gap-2 md:w-max">
-            <div className="w-full md:w-72">
-              <Input
-                label="Search"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              />
-            </div>
-            <Button className="flex items-center gap-3" size="sm">
-              <ArrowDownTrayIcon strokeWidth={2} className="h-4 w-4" /> Download
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-      
-      <CardBody className="overflow-scroll px-0">
-        <table className="w-full min-w-max table-auto text-left">
-          <thead>
-            <tr>
-              {TABLE_HEAD.map((head) => (
-                <th
-                  key={head}
-                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                >
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal leading-none opacity-70"
-                  >
-                    {head}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-          {trails.map((trail, index) => {
-                            const isLast = index === trails.length - 1;
-                            const classes = isLast
-                                ? "p-4"
-                                : "p-4 border-b border-blue-gray-50";
-
- 
-                return (
-                  <tr key={trail._id}>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <Avatar
-                          
-                          alt={name}
-                          size="md"
-                          className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
-                        />
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-bold"
-                        >
-                          {trail.title}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {trail.trailClass}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {trail.difficultyLevel}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {trail.elevation}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {trail.description}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <div className="w-max">
-                        <Chip
-                          size="sm"
-                          variant="ghost"
-                          value={status}
-                          color={
-                            status === "paid"
-                              ? "green"
-                              : status === "pending"
-                              ? "amber"
-                              : "red"
-                          }
-                        />
-                      </div>
-                    </td>
-                  
-                    <td className={classes}>
-                      <Tooltip content="Edit User">
-                        <IconButton variant="text">
-                          <PencilIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              },
-            )}
-          </tbody>
-        </table>
-      </CardBody>
-
-      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-        <Button variant="outlined" size="sm">
-          Previous
-        </Button>
-        <div className="flex items-center gap-2">
-          <IconButton variant="outlined" size="sm">
-            1
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            2
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            3
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            ...
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            8
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            9
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            10
-          </IconButton>
-        </div>
-        <Button variant="outlined" size="sm">
-          Next
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-}
-*/

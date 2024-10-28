@@ -1,11 +1,9 @@
 import { TravelAgency } from "@/models/TravelAgency";
 import { mongooseConnect } from "@/lib/mongoose";
-import { isSuperAdminRequest } from "./auth/[...nextauth]";
 
 export default async function handle(req, res) {
     const {method} = req;
     await mongooseConnect();
-    await isSuperAdminRequest(req, res);
 
     if (method === 'GET'){
         if(req.query?.id){
